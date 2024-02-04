@@ -3,13 +3,9 @@ from django.http import HttpResponse
 
 import pandas as pd
 import numpy as np
-from typing import Optional
-import json,pickle,sys
-from fastapi import FastAPI
+import json,pickle
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
 from regression.features import feature_engineering
-from sklearn.metrics import mean_squared_error,r2_score
 from regression.preprocessing import encode_dataframe
 import os
 
@@ -28,8 +24,6 @@ def mainPage(request):
         return render(request, "main.html", {"form": form})
     
     config=json.load(open("resources/config.json"))
-    PORT = os.environ.get("PORT", 8000)
-    app = FastAPI(port=PORT)
 
     model=pickle.load(open(config['model_path'],"rb"))
     encoder_struct=pickle.load(open(config["encoder_path"],"rb"))

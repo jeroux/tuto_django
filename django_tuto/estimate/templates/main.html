@@ -1,5 +1,16 @@
-<form method="post">
-    {% csrf_token %}
-    {{form}}
-    <input type="submit" value="Submit" />
-</form>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Estimation</title>
+</head>
+<body>
+	<h1>Estimation</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{{ form.as_p}}
+		<button type="submit">Submit</button>
+	</form>
+</body>
+</html>
