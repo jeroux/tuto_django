@@ -60,7 +60,7 @@ pip install django
 pip install scikit-learn
 pip install pandas
 pip install numpy
-pip install django-crispy-forms
+pip install fastapi
 ```
 
 Then you can create the project and the app.
