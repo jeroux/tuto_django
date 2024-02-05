@@ -1,5 +1,5 @@
 # Tutorial Django
-This application runs a website with a model trained to predict prices from real estate ads.
+This application runs a website with a model trained to predict prices from real estate data.
 
 The website is built with Django and the model is trained with scikit-learn.
 
