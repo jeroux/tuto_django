@@ -1,20 +1,32 @@
-
-
+{% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-	<title>Estimation</title>
-</head>
-<body>
-	<h1>Estimation</h1>
-	<form method="POST">
-		{% csrf_token %}
-		{{ form.as_p}}
-		<button type="submit">Submit</button>
-	</form>
-	<h2>Estimation</h2>
-	{% if estimation %}
-		<p>{{ estimation }}</p>
-	{% endif %}
-</body>
+	<head>
+		<title>Estimation</title>
+		<link rel="stylesheet" type="text/css" href="{% static 'estimate/main.css' %}">
+	</head>
+	<body>
+		<div class="main_container">
+			<div class="left_container">
+				<h1>Informations</h1>
+				<form method="POST">
+					{% csrf_token %}
+					{{ form.as_p}}
+					<button type="submit">Submit</button>
+				</form>
+			</div>
+			<div class="middle_container">
+				<h2>Estimation</h2>
+				{% if estimation %}
+					<p>{{ estimation }}</p>
+				{% endif %}
+			</div>
+			<div class="right_container">
+				<h2>Anciennes Estimations</h2>
+				{% for property in properties %}
+					<p>{{ property }}</p>
+				{% endfor %}
+			</div>
+		</div>
+	</body>
 </html>

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+
 
 import pandas as pd
 import numpy as np
@@ -8,14 +8,19 @@ from regression.features import feature_engineering
 from regression.preprocessing import encode_dataframe
 import os
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+
 from .forms import PropertyForm
+from .models import Property
 
 
-# Create your views here.
+@login_required
 def mainPage(request):
+    properties = request.user.property_set.all()
     if request.method == "GET":
         form = PropertyForm()
-        return render(request, "main.html", {"form": form})
+        return render(request, "main.html", {"form": form, "properties": properties})
     
     form = PropertyForm(request.POST)
 
@@ -46,5 +51,20 @@ def mainPage(request):
     df.drop("PostalCode",axis=1,inplace=True)
     df,e=encode_dataframe(df,encoder_struct)
     score=np.abs(model.predict(df))
+
+    Property.objects.create(
+        postal_code = form.cleaned_data["PostalCode"],
+        type_of_property = form.cleaned_data["TypeOfProperty"],
+        type_of_sale = form.cleaned_data["TypeOfSale"],
+        kitchen = form.cleaned_data["Kitchen"],
+        state_of_building = form.cleaned_data["StateOfBuilding"],
+        bedrooms = form.cleaned_data["Bedrooms"],
+        surface_of_good = form.cleaned_data["SurfaceOfGood"],
+        number_of_facades = form.cleaned_data["NumberOfFacades"],
+        living_area = form.cleaned_data["LivingArea"],
+        garden_area = form.cleaned_data["GardenArea"],
+        estimation = score[0],
+        user = request.user
+    )
 
     return render(request, "main.html", {"form": form, "estimation": str(round(score[0], 2))})
