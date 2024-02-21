@@ -1,5 +1,5 @@
 # Tutorial Django
-This application runs a website with a model trained to predict prices from real estate ads.
+This application runs a website with a model trained to predict prices from real estate data.
 
 The website is built with Django and the model is trained with scikit-learn.
 
@@ -60,7 +60,7 @@ pip install django
 pip install scikit-learn
 pip install pandas
 pip install numpy
-pip install django-crispy-forms
+pip install fastapi
 ```
 
 Then you can create the project and the app.
