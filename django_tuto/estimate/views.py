@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 
 import pandas as pd
 import numpy as np
@@ -40,6 +39,7 @@ def mainPage(request):
         "LivingArea": form.cleaned_data["LivingArea"],
         "GardenArea": form.cleaned_data["GardenArea"],
     }
+
     df=pd.DataFrame.from_dict(jsonable_encoder(data),orient="index").transpose()
     df=df.reindex(columns=["PostalCode"]+model.feature_names_in_.tolist())
     df=feature_engineering(df)
@@ -47,5 +47,4 @@ def mainPage(request):
     df,e=encode_dataframe(df,encoder_struct)
     score=np.abs(model.predict(df))
 
-    return HttpResponse("Prediction: " + str(score[0]))
-    return render(request, "main.html")
+    return render(request, "main.html", {"form": form, "estimation": str(round(score[0], 2))})

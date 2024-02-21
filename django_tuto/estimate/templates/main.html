@@ -12,5 +12,9 @@
 		{{ form.as_p}}
 		<button type="submit">Submit</button>
 	</form>
+	<h2>Estimation</h2>
+	{% if estimation %}
+		<p>{{ estimation }}</p>
+	{% endif %}
 </body>
 </html>

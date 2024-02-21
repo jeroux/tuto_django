@@ -198,4 +198,76 @@ The forms.py file is used to create a form. It is a class that inherits from for
 
 The views.py file is used to create a view. It is a function that takes a request as a parameter and return a response. In this case, the response is a form. The form is created with the form we have created in the forms.py file. We use the render function to return a template with the form.
 
+## Use the form to make a prediction and display the result
 
+We will now use the data from the form to make a prediction with a trained model and display the result. We will go in the "estimate" app and open the file called views.py.
+
+We will modify the mainPage function to use the data from the form to make a prediction and display the result.
+
+I will use the model and the encoders from the immo-app project. You can use your own model instead.
+
+```python
+
+# imports for the prediction
+import pandas as pd
+import numpy as np
+import json,pickle
+from fastapi.encoders import jsonable_encoder
+from regression.features import feature_engineering
+from regression.preprocessing import encode_dataframe
+import os
+
+# imports for django
+from django.shortcuts import render
+
+from .forms import PropertyForm
+
+
+def mainPage(request):
+	# if the request is a GET request
+    if request.method == "GET":
+        form = PropertyForm()
+        return render(request, "main.html", {"form": form})
+    
+	# if the request is a POST request
+    form = PropertyForm(request.POST)
+
+	# if the form is not valid
+    if not form.is_valid():
+        return render(request, "main.html", {"form": form})
+    
+	# if the form is valid
+    config=json.load(open("resources/config.json"))
+
+    model=pickle.load(open(config['model_path'],"rb"))
+    encoder_struct=pickle.load(open(config["encoder_path"],"rb"))
+    print("model and encoders loaded!")
+    data = {
+        "PostalCode": form.cleaned_data["PostalCode"],
+        "TypeOfProperty": form.cleaned_data["TypeOfProperty"],
+        "TypeOfSale": form.cleaned_data["TypeOfSale"],
+        "Kitchen": form.cleaned_data["Kitchen"],
+        "StateOfBuilding": form.cleaned_data["StateOfBuilding"],
+        "Bedrooms": form.cleaned_data["Bedrooms"],
+        "SurfaceOfGood": form.cleaned_data["SurfaceOfGood"],
+        "NumberOfFacades": form.cleaned_data["NumberOfFacades"],
+        "LivingArea": form.cleaned_data["LivingArea"],
+        "GardenArea": form.cleaned_data["GardenArea"],
+    }
+    df=pd.DataFrame.from_dict(jsonable_encoder(data),orient="index").transpose()
+    df=df.reindex(columns=["PostalCode"]+model.feature_names_in_.tolist())
+    df=feature_engineering(df)
+    df.drop("PostalCode",axis=1,inplace=True)
+    df,e=encode_dataframe(df,encoder_struct)
+    score=np.abs(model.predict(df))
+	
+    return render(request, "main.html", {"form": form, "estimation": str(score[0])})
+	```
+
+	You should see the result of the prediction on the page.
+
+	That's it, you have created a website with Django and used a trained model to make predictions.
+
+	In the second part, we will see how to create authentication and how to work with a database.
+
+	To go to the second part, explore the branch "part2" of this project.
