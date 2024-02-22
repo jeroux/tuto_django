@@ -166,7 +166,7 @@ from .forms import PropertyForm
 
 def mainPage(request):
 	form = PropertyForm()
-	return render(request, 'estimate/mainPage.html', {'form': form})
+	return render(request, 'mainPage.html', {'form': form})
 ```
 
 Then we will create a folder called "templates" in the "estimate" app. In this folder, we will create a file called "mainPage.html".
@@ -227,14 +227,14 @@ def mainPage(request):
 	# if the request is a GET request
     if request.method == "GET":
         form = PropertyForm()
-        return render(request, "main.html", {"form": form})
+        return render(request, "mainPage.html", {"form": form})
     
 	# if the request is a POST request
     form = PropertyForm(request.POST)
 
 	# if the form is not valid
     if not form.is_valid():
-        return render(request, "main.html", {"form": form})
+        return render(request, "mainPage.html", {"form": form})
     
 	# if the form is valid
     config=json.load(open("resources/config.json"))
@@ -261,7 +261,29 @@ def mainPage(request):
     df,e=encode_dataframe(df,encoder_struct)
     score=np.abs(model.predict(df))
 	
-    return render(request, "main.html", {"form": form, "estimation": str(score[0])})
+    return render(request, "mainPage.html", {"form": form, "estimation": str(score[0])})
+```
+
+Then we will modify the "mainPage.html" file to display the result.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Estimation</title>
+</head>
+<body>
+	<h1>Estimation</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit">Submit</button>
+	</form>
+	{% if estimation %}
+		<p>Estimation: {{ estimation }}</p>
+	{% endif %}
+</body>
+</html>
 ```
 
 You should see the result of the prediction on the page.
